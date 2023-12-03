@@ -9,7 +9,7 @@ import (
 func main() {
 	content := utils.ReadFile("./input")
 
-	result := day3.Part1(content)
+	result := day3.Part2(content)
 
 	fmt.Printf("Result: %d", result)
 }

@@ -1,7 +1,7 @@
 package main
 
 import (
-	"aoc/day5"
+	"aoc/day6"
 	"aoc/utils"
 	"fmt"
 )
@@ -9,7 +9,7 @@ import (
 func main() {
 	content := utils.ReadFile("./input")
 
-	result := day5.Part2(content)
+	result := day6.Part1(content)
 
 	fmt.Printf("Result: %d", result)
 }

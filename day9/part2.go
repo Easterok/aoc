@@ -10,21 +10,17 @@ func extrapolateBackwards(nums []int) int {
 
 	acc := []int{}
 
+	done := true
+
 	for i := 1; i < len(nums); i++ {
 		a := nums[i-1]
 		b := nums[i]
 
-		acc = append(acc, b-a)
-	}
+		next := b - a
 
-	done := true
+		acc = append(acc, next)
 
-	index := 0
-
-	for index < len(acc) && done {
-		done = acc[index] == 0 && done
-
-		index += 1
+		done = next == 0 && done
 	}
 
 	if done {

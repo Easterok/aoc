@@ -6,51 +6,47 @@ import (
 	"strings"
 )
 
-type HandType = int
-
-const (
-	HIGH HandType = iota + 1
-	ONE_PAIR
-	TWO_PAIR
-	THREE_OAK
-	FULL_HOUSE
-	FOUR_OAK
-	FIVE_OAK
-)
-
-var CARD_RATING = map[byte]int{
-	'2': 1,
-	'3': 2,
-	'4': 3,
-	'5': 4,
-	'6': 5,
-	'7': 6,
-	'8': 7,
-	'9': 8,
-	'T': 9,
-	'J': 10,
+var CARD_RATING_PART2 = map[byte]int{
+	'J': 1,
+	'2': 2,
+	'3': 3,
+	'4': 4,
+	'5': 5,
+	'6': 6,
+	'7': 7,
+	'8': 8,
+	'9': 9,
+	'T': 10,
 	'Q': 11,
 	'K': 12,
 	'A': 13,
 }
 
-type Eval struct {
-	value  int
-	origin string
-	hand   HandType
+type EvalArrPart2 []Eval
+
+func (a EvalArrPart2) Len() int      { return len(a) }
+func (a EvalArrPart2) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
+func (a EvalArrPart2) Less(i, j int) bool {
+	if a[i].hand < a[j].hand {
+		return false
+	}
+
+	if a[i].hand == a[j].hand {
+		return compareSameTypesP2(a[i], a[j])
+	}
+
+	return true
 }
 
-type EvalArr []Eval
-
-func compareSameTypes(e1 Eval, e2 Eval) bool {
+func compareSameTypesP2(e1 Eval, e2 Eval) bool {
 	i := 0
 
 	origin_a := e1.origin
 	origin_b := e2.origin
 
 	for i < 5 {
-		a := CARD_RATING[origin_a[i]]
-		b := CARD_RATING[origin_b[i]]
+		a := CARD_RATING_PART2[origin_a[i]]
+		b := CARD_RATING_PART2[origin_b[i]]
 
 		if a < b {
 			return false
@@ -64,32 +60,28 @@ func compareSameTypes(e1 Eval, e2 Eval) bool {
 	return true
 }
 
-func (a EvalArr) Len() int      { return len(a) }
-func (a EvalArr) Swap(i, j int) { a[i], a[j] = a[j], a[i] }
-func (a EvalArr) Less(i, j int) bool {
-	if a[i].hand < a[j].hand {
-		return false
-	}
-
-	if a[i].hand == a[j].hand {
-		return compareSameTypes(a[i], a[j])
-	}
-
-	return true
-}
-
-func eval(str string) Eval {
+func evalp2(str string) Eval {
 	dict := map[rune]int{}
 
 	_type := HIGH
 
+	j_count := 0
+
 	for _, i := range str {
-		value, ok := dict[rune(i)]
+		r := rune(i)
+
+		if r == 'J' {
+			j_count += 1
+
+			continue
+		}
+
+		value, ok := dict[r]
 
 		if ok {
-			dict[rune(i)] = value + 1
+			dict[r] = value + 1
 		} else {
-			dict[rune(i)] = 1
+			dict[r] = 1
 		}
 	}
 
@@ -99,6 +91,24 @@ func eval(str string) Eval {
 
 	for key := range dict {
 		keys = append(keys, key)
+	}
+
+	if j_count > 0 {
+		if j_count == 5 {
+			return Eval{value: 0, origin: str, hand: FIVE_OAK}
+		}
+
+		k := keys[0]
+		m := dict[k]
+
+		for ke, ve := range dict {
+			if ve > m {
+				k = ke
+				m = ve
+			}
+		}
+
+		dict[k] = m + j_count
 	}
 
 	if dictlen == 1 {
@@ -129,7 +139,7 @@ func eval(str string) Eval {
 	return Eval{value: 0, origin: str, hand: _type}
 }
 
-func Part1(content string) int {
+func Part2(content string) int {
 	handsAndBid := strings.Split(content, "\r\n")
 
 	acc := []Eval{}
@@ -140,13 +150,13 @@ func Part1(content string) int {
 		hand := strings.TrimSpace(c[0])
 		bid := utils.LineToNums(c[1])[0]
 
-		a := eval(hand)
+		a := evalp2(hand)
 		a.value = bid
 
 		acc = append(acc, a)
 	}
 
-	sort.Sort(EvalArr(acc))
+	sort.Sort(EvalArrPart2(acc))
 
 	l := len(acc)
 	result := 0

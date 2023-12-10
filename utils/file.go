@@ -31,3 +31,19 @@ func ReadFile(name string) string {
 
 	return string(content)
 }
+
+func WriteFile(filePath string, content []byte) {
+	file, err := os.Create(filePath)
+
+	if err != nil {
+		panic(err)
+	}
+
+	defer file.Close()
+
+	_, err = file.Write(content)
+
+	if err != nil {
+		panic(err)
+	}
+}

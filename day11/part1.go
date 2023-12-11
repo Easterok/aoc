@@ -1,19 +1,17 @@
 package day11
 
 import (
-	"fmt"
-	"math"
 	"strings"
 )
 
-func expand(galaxy [][]string) [][]string {
+func expandedRowsAndCols(galaxy []string) Expanded {
 	rows := map[int]bool{}
 
 	for r, row := range galaxy {
 		shouldExpandRow := true
 
 		for _, col := range row {
-			shouldExpandRow = shouldExpandRow && col == "."
+			shouldExpandRow = shouldExpandRow && col == '.'
 		}
 
 		if shouldExpandRow {
@@ -27,7 +25,7 @@ func expand(galaxy [][]string) [][]string {
 		shouldExpandCol := true
 
 		for r := range galaxy {
-			shouldExpandCol = shouldExpandCol && galaxy[r][c] == "."
+			shouldExpandCol = shouldExpandCol && galaxy[r][c] == '.'
 		}
 
 		if shouldExpandCol {
@@ -35,32 +33,7 @@ func expand(galaxy [][]string) [][]string {
 		}
 	}
 
-	expanded := [][]string{}
-	emptyRow := []string{}
-
-	for i := 0; i < len(galaxy)+len(cols); i++ {
-		emptyRow = append(emptyRow, ".")
-	}
-
-	for r, row := range galaxy {
-		res := []string{}
-
-		for c, item := range row {
-			res = append(res, item)
-
-			if cols[c] {
-				res = append(res, ".")
-			}
-		}
-
-		expanded = append(expanded, res)
-
-		if rows[r] {
-			expanded = append(expanded, emptyRow)
-		}
-	}
-
-	return expanded
+	return Expanded{rows: rows, cols: cols}
 }
 
 type Node struct {
@@ -68,12 +41,12 @@ type Node struct {
 	col int
 }
 
-func makeMap(entry [][]string) []Node {
+func makeMap(entry []string) []Node {
 	res := []Node{}
 
 	for r, row := range entry {
 		for c, item := range row {
-			if item == "#" {
+			if item == '#' {
 				res = append(res, Node{col: c, row: r})
 			}
 		}
@@ -82,72 +55,42 @@ func makeMap(entry [][]string) []Node {
 	return res
 }
 
-// . . # .
-// . . . .
-// # . . .
-
-func shortestLength(node Node, dist Node) int {
-	col_length := int(math.Abs(float64(dist.col - node.col)))
-	row_length := int(math.Abs(float64(dist.row - node.row)))
-
-	if col_length == 0 {
-		return row_length
-	}
-
-	if row_length == 0 {
-		return col_length
-	}
-
-	col_step := 1
-
-	if dist.col < node.col {
-		col_step = -1
-	}
-
-	steps, r, c := 0, 0, 0
-
-	t := "col"
-
-	for node.row+r != dist.row || node.col+c != dist.col {
-		if t == "col" {
-			c += col_step
-
-			if node.row+r != dist.row {
-				t = "row"
-			}
-		} else {
-			r += 1
-
-			if node.col+c != dist.col {
-				t = "col"
-			}
-		}
-
-		steps += 1
-	}
-
-	return steps
-}
-
 func Part1(content string) int {
-	galaxy := [][]string{}
+	lines := strings.Split(content, "\r\n")
 
-	for _, row := range strings.Split(content, "\r\n") {
-		galaxy = append(galaxy, strings.Split(row, ""))
-	}
-
-	expanded := expand(galaxy)
-	entry := makeMap(expanded)
-
-	for _, e := range expanded {
-		fmt.Println(e)
-	}
+	expanded := expandedRowsAndCols(lines)
+	entry := makeMap(lines)
 
 	result := 0
+	scale := 2
 
 	for index, start := range entry {
 		for _, dist := range entry[index+1:] {
-			result += shortestLength(start, dist)
+			r := min(start.row, dist.row)
+			r_max := max(start.row, dist.row)
+
+			c := min(start.col, dist.col)
+			c_max := max(start.col, dist.col)
+
+			for r < r_max {
+				if expanded.rows[r] {
+					result += scale
+				} else {
+					result += 1
+				}
+
+				r += 1
+			}
+
+			for c < c_max {
+				if expanded.cols[c] {
+					result += scale
+				} else {
+					result += 1
+				}
+
+				c += 1
+			}
 		}
 	}
 

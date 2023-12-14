@@ -1,7 +1,6 @@
 package day14
 
 import (
-	"fmt"
 	"strings"
 )
 
@@ -43,10 +42,6 @@ func Part1(content string) int {
 		}
 
 		acc = append(acc, a)
-	}
-
-	for r := range acc[1:] {
-		fmt.Println(acc[r+1])
 	}
 
 	for r, k := range rows {

@@ -1,3 +1,3 @@
-AOC 2023
+AOC 2022
 
-https://adventofcode.com/2023
+https://adventofcode.com/2022

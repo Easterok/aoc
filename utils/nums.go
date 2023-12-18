@@ -56,3 +56,13 @@ func LineToUint64(s string) []uint64 {
 
 	return result
 }
+
+func HexToInt64(s string) int64 {
+	result, err := strconv.ParseInt(s, 16, 64)
+
+	if err != nil {
+		panic(err)
+	}
+
+	return result
+}

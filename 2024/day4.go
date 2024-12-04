@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-const XMAS_LEN = len("MAS")
+const XMAS_LEN = len("XMAS")
 
 func xmas(s string) int {
 	count := 0
@@ -13,7 +13,7 @@ func xmas(s string) int {
 
 	for index <= len(s)-XMAS_LEN {
 		c := s[index : index+XMAS_LEN]
-		if c == "MAS" || c == "SAM" {
+		if c == "XMAS" || c == "XSAM" {
 			count += 1
 		}
 

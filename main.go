@@ -9,7 +9,7 @@ import (
 func main() {
 	content := utils.ReadFile("./input")
 
-	res := aoc_2024.Day16P2(content)
+	res := aoc_2024.Day17P2(content)
 
 	fmt.Println("result:", res)
 }
